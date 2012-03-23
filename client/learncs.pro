@@ -1,6 +1,8 @@
-HEADERS       = window.h
+HEADERS       = window.h \
+    mainwindow.h
 SOURCES       = main.cpp \
-                window.cpp
+                window.cpp \
+    mainwindow.cpp
 RESOURCES     = learncs.qrc
 QT           += xml svg
 
@@ -22,3 +24,9 @@ wince* {
 	addPlugins.path = imageformats
 	DEPLOYMENT += addPlugins
 }
+
+FORMS += \
+    mainwindow.ui
+
+OTHER_FILES += \
+    README.txt
