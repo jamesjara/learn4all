@@ -16,7 +16,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void   MainWindow::createTrayIcon ()
+void MainWindow::createTrayIcon ()
 {
     if(!QSystemTrayIcon::isSystemTrayAvailable()){
         QMessageBox::critical(0,QObject::tr("Learn4All"),QObject::tr("El SO no es compatible :( "));
@@ -33,5 +33,23 @@ void   MainWindow::createTrayIcon ()
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-     this->show();
+    this->show();
+}
+
+void CheckUser()
+{
+    //If the config.ini doesnt exists the show user dialog.
+
+        //If config.ini exists check the user with the webservice
+            //if correct continue
+            //else show login dialog
+}
+
+void LoginWindow(){
+
+}
+
+void MainWindow::on_container_currentChanged(int arg1)
+{
+    qDebug() <<  "buffer Container current changed:" + arg1 ;
 }
