@@ -15,6 +15,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void Checkuser();
+    void LoginWindow();
 
 private:
     Ui::MainWindow *ui;
@@ -26,6 +28,7 @@ private:
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
+    void on_container_currentChanged(int arg1);
 };
 
 #endif // MAINWINDOW_H
