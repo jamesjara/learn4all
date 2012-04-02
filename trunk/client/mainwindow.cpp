@@ -8,13 +8,19 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     createTrayIcon ();
-
+    CheckUser();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    this->show();
+}
+
 
 void MainWindow::createTrayIcon ()
 {
@@ -31,25 +37,53 @@ void MainWindow::createTrayIcon ()
     connect(trayicon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
 }
 
-void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-    this->show();
-}
 
-void CheckUser()
+void MainWindow::CheckUser()
 {
-    //If the config.ini doesnt exists the show user dialog.
+    //Load Config
+    QString IniFilename;
+    IniFilename =   "config.ini";
 
+    if( !QFile::exists(IniFilename) ){
+        ShowLoginWindow();
+    } else {
         //If config.ini exists check the user with the webservice
             //if correct continue
-            //else show login dialog
+            //else show login dialog      
+    }
 }
 
-void LoginWindow(){
-
+void MainWindow::ShowLoginWindow(){
+    this->show();
+    ui->container->setCurrentIndex(0);
 }
 
-void MainWindow::on_container_currentChanged(int arg1)
+
+inline bool  MainWindow::CreateUser( )
 {
-    qDebug() <<  "buffer Container current changed:" + arg1 ;
+    return false;
 }
+
+void MainWindow::validateCreateuserForm( )
+{
+    //Validar
+    QString  usuario     =   ui->usuarioLineEdit->text();
+    QString  password    =   ui->passwordLineEdit->text();
+    QString  password_r  =   ui->repetirPasswordLineEdit->text();
+    //validate data
+    if( !usuario.isEmpty() || !password.isEmpty() || !password_r.isEmpty()  ){
+        if( password != password_r ){
+            qDebug() <<  " las contraseñas no conciden"  ;
+        } else {
+            //if all its fine, add user to webservice
+            if(!CreateUser()){
+                 qDebug() <<  " el usuario ya esta registrado "  ;
+             } else {
+                ShowLoginWindow();
+             }
+            qDebug() <<  "CreateUser Container current changed:"  ;
+        }
+    } else qDebug() <<  " Todos los campos son obligatorios "  ;
+}
+
+
