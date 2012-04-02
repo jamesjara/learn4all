@@ -15,20 +15,22 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void Checkuser();
-    void LoginWindow();
 
 private:
     Ui::MainWindow *ui;
     void createTrayIcon();
+    void ShowLoginWindow();
+    inline bool  CreateUser();
+    void CheckUser();
 
     QSystemTrayIcon *trayicon;
     QMenu *trayIconMenu;
+    //bool logged = false;
 
 
 private slots:
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void on_container_currentChanged(int arg1);
+    void validateCreateuserForm();
 };
 
 #endif // MAINWINDOW_H
