@@ -5,7 +5,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
-{
+{    
+    IniFilename = QString("config.ini");
     ui->setupUi(this);
     createTrayIcon ();
     CheckUser();
@@ -22,6 +23,7 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 }
 
 
+//==========BOF======GENERAL================//
 void MainWindow::createTrayIcon ()
 {
     if(!QSystemTrayIcon::isSystemTrayAvailable()){
@@ -41,49 +43,97 @@ void MainWindow::createTrayIcon ()
 void MainWindow::CheckUser()
 {
     //Load Config
-    QString IniFilename;
-    IniFilename =   "config.ini";
+    QSettings * settings = 0;
+    settings = new QSettings( IniFilename , QSettings::IniFormat );
+    settings->beginGroup("Login");
+    //Read user
+    QString strUser      = settings->value( "user" , "error" ).toString();
+    //Read password
+    QString strPassword  = settings->value( "password" , "error" ).toString();
+    settings->endGroup();
 
-    if( !QFile::exists(IniFilename) ){
+    //if is default value then error
+    if( strUser.contains("error") ){
         ShowLoginWindow();
     } else {
-        //If config.ini exists check the user with the webservice
-            //if correct continue
-            //else show login dialog      
+        //Validar, If config.ini exists check the user with the webservice
+        //check user to webservice
+        if(!CheckUser_Ws(strUser,strPassword)){
+            ShowLoginWindow();
+             ui->status->setText(" datos incorrectos ");
+         } else {
+            ShowWelcomeWindow();
+         }
     }
 }
+//==========EOF======GENERAL================//
 
+
+//==========BOF======WEBSERVICE================//
+inline bool MainWindow::CheckUser_Ws(QString User , QString Password )
+{
+    //Conect to webservice
+    this->Username  = User;
+    this->Token     = "asdxvc33214";
+    //Webservice return start(true,false) ,Token(for other requests)
+    if(User.contains("admin")){
+        return true;
+    } else return false;
+}
+/*Qstring  MainWindow::CheckUser_Ws(QString User , QString Password )
+{
+    //Conect to webservice
+    return "";
+}*/
+
+//==========EOF======WEBSERVICE================//
+
+
+
+//==========BOF======Show windows================//
 void MainWindow::ShowLoginWindow(){
     this->show();
     ui->container->setCurrentIndex(0);
 }
-
-
-inline bool  MainWindow::CreateUser( )
-{
-    return false;
+void MainWindow::ShowWelcomeWindow(){
+    this->show();
+    ui->container->setCurrentIndex(1);
+    //Fill Form Data
+    ui->username_txt->setText(this->Username);
+    ui->articulos_val_txt->setText("525");
+    ui->score_val_txt->setText("797");
+    //Get articule
 }
+//==========EOF======Show windows================//
 
-void MainWindow::validateCreateuserForm( )
+
+
+
+//==========BOF======Validations================//
+void MainWindow::validateUserForm( )
 {
     //Validar
     QString  usuario     =   ui->usuarioLineEdit->text();
     QString  password    =   ui->passwordLineEdit->text();
-    QString  password_r  =   ui->repetirPasswordLineEdit->text();
     //validate data
-    if( !usuario.isEmpty() || !password.isEmpty() || !password_r.isEmpty()  ){
-        if( password != password_r ){
-            qDebug() <<  " las contraseñas no conciden"  ;
-        } else {
-            //if all its fine, add user to webservice
-            if(!CreateUser()){
-                 qDebug() <<  " el usuario ya esta registrado "  ;
+    if( !usuario.isEmpty() && !password.isEmpty()   ){
+            //if all its fine, check user to webservice
+            if(!CheckUser_Ws(usuario,password)){
+                 ui->status->setText(" datos incorrectos ");
              } else {
-                ShowLoginWindow();
+                //Save data to file
+                QSettings * settings = 0;
+                settings = new QSettings( IniFilename , QSettings::IniFormat );
+                settings->beginGroup("Login");
+                //Set user
+                settings->setValue( "user" ,     usuario );
+                //Set password
+                settings->setValue( "password" , password);
+                settings->endGroup();
+
+                //Show Welcome window
+                ShowWelcomeWindow();
              }
-            qDebug() <<  "CreateUser Container current changed:"  ;
-        }
-    } else qDebug() <<  " Todos los campos son obligatorios "  ;
+    } else  ui->status->setText("  Todos los campos son obligatorios ");
 }
-
-
+//==========EOF======Validations================//
