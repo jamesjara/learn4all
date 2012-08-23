@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     createTrayIcon ();
     CheckUser();
+
 }
 
 MainWindow::~MainWindow()
@@ -76,7 +77,7 @@ inline bool MainWindow::CheckUser_Ws(QString User , QString Password )
     this->Username  = User;
     this->Token     = "asdxvc33214";
     //Webservice return start(true,false) ,Token(for other requests)
-    if(User.contains("admin")){
+    if(User.contains("jamsb")){
         return true;
     } else return false;
 }
